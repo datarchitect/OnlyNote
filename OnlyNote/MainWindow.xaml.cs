@@ -19,15 +19,37 @@ namespace OnlyNote
     {
         private int _row;
         private int _col;
+        private int _maxRow;
+        private int _maxCol;
 
         public int col { get => _col; set => _col = value; }
         public int row { get => _row; set => _row = value; }
 
         public pos() { }
-        public pos(int row, int col)
+
+        public void Initialize()
         {
-            this.row = row;
-            this.col = col;
+            _row = 0; _col = 0;
+        }
+
+        public void SetMaxLimit(int row, int col)
+        {
+            _maxRow = row;
+            _maxCol = col;
+        }
+
+        public void MoveToNextPos()
+        {
+            if (_col >= (_maxCol - 1))
+            {
+                _col = 0;
+                _row += 2;
+            }
+            else
+                _col++;
+
+            if ((_row >= _maxRow))
+                MessageBox.Show("Row limit reached");
         }
     }
     /// <summary>
@@ -39,12 +61,12 @@ namespace OnlyNote
         private const int MAX_ROWS = 4;
         private const int MAX_COLS = 4;
         ListBox[,] taskLists = new ListBox[MAX_ROWS, MAX_COLS];
-        pos currentPosition = new pos ( 0, 0 );
+        pos currentPosition = new pos ();
 
         public MainWindow()
         {
             InitializeComponent();
-            list.Populate();
+            currentPosition.SetMaxLimit(MAX_ROWS, MAX_COLS);
             BindEvents();
             HydrateForm();
 //            UpdateTaskLists();
@@ -65,71 +87,42 @@ namespace OnlyNote
         {
             List<string> categories = list.GetAllCategories();
 
+            currentPosition.Initialize();
             foreach (string category in categories)
             {
-                pos thisPosition = AddCategoryControls(category);
-                UpdateTaskLists(thisPosition);
+                AddCategoryControls(category);
+                UpdateTaskListControl(currentPosition);
+                currentPosition.MoveToNextPos();
             }
         }
 
-        private pos AddCategoryControls(string category)
+        private void AddCategoryControls(string category)
         {
-            pos newPosition = GetNextPos(currentPosition);
-
             Label lblNew = new Label();
             lblNew.Name = ("lbl" + category).Replace(" ", "");
             lblNew.Content = category;
             lblNew.IsTabStop = false;
-            Grid.SetColumn(lblNew, newPosition.col);
-            Grid.SetRow(lblNew, newPosition.row);
+            Grid.SetColumn(lblNew, currentPosition.col);
+            Grid.SetRow(lblNew, currentPosition.row);
             grdMain.Children.Add(lblNew);
 
             ListBox newList = new ListBox();
             newList.Name = ("lst" + category).Replace(" ", "");
-            Grid.SetColumn(newList, newPosition.col);
-            Grid.SetRow(newList, newPosition.row + 1);
+            Grid.SetColumn(newList, currentPosition.col);
+            Grid.SetRow(newList, currentPosition.row + 1);
             grdMain.Children.Add(newList);
             newList.Tag = category;
             newList.KeyUp += LstTasks_KeyUp;
 
             newList.IsTabStop = true;
-            int tabIndex = (newPosition.row * MAX_COLS) + newPosition.col;
+            int tabIndex = (currentPosition.row * MAX_COLS) + currentPosition.col;
             newList.TabIndex = tabIndex;
 
             //TODO: move out
             if (tabIndex == 0)
                 newList.Focus();
 
-            taskLists[newPosition.row, newPosition.col] = newList;
-            currentPosition = newPosition;
-
-            return newPosition;
-        }
-
-        private void AddNewCategory(string newValue)
-        {
-            list.Add(new TODOItem(newValue, "Dummy Task", string.Empty));
-
-            pos thisPosition = AddCategoryControls(newValue);
-            UpdateTaskLists(thisPosition);
-        }
-
-        public pos GetNextPos(pos currentPosition)
-        {
-            if ((currentPosition.row == MAX_ROWS) || (currentPosition.col == MAX_COLS))
-                MessageBox.Show("Row / Col limit reached");
-
-            currentPosition.col++;
-            if (currentPosition.col == MAX_COLS)
-            {
-                if (currentPosition.row < MAX_ROWS)
-                {
-                    currentPosition.row += 2;
-                    currentPosition.col = 0;
-                }
-            }
-
-            return currentPosition;
+            taskLists[currentPosition.row, currentPosition.col] = newList;
         }
 
         private void ShowNotes(TODOItem todo)
@@ -143,7 +136,7 @@ namespace OnlyNote
             }
         }
 
-        public void UpdateTaskLists(pos thisPosition)
+        public void UpdateTaskListControl(pos thisPosition)
         {
             ListBox thisList = taskLists[thisPosition.row, thisPosition.col];
             string category = thisList.Tag as string;
@@ -153,7 +146,7 @@ namespace OnlyNote
             thisList.SelectedValuePath = "ID";
         }
 
-        public void UpdateTaskLists(ListBox thisList)
+        public void UpdateTaskListControl(ListBox thisList)
         {
             string category = thisList.Tag as string;
 
@@ -188,7 +181,11 @@ namespace OnlyNote
             if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && (e.Key == Key.K))
             {
                 string newValue = ReadNewValue();
-                AddNewCategory(newValue);
+                list.AddNewCategory(newValue);
+                AddCategoryControls(newValue);
+                UpdateTaskListControl(currentPosition);
+                currentPosition.MoveToNextPos();
+
             }
         }
 
@@ -208,7 +205,7 @@ namespace OnlyNote
                 string thisCategory = thisListBox.Tag as string;
                 string newValue = ReadNewValue();
                 list.Add(new TODOItem(thisCategory, newValue, string.Empty));
-                UpdateTaskLists(thisListBox);
+                UpdateTaskListControl(thisListBox);
             }
         }
 

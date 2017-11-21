@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using System.Runtime.Serialization;
+using System.IO;
+using System.Runtime.Serialization.Json;
 
 namespace OnlyNote
 {
+    [DataContract]
     class TODOItem
     {
         private string _Id;
@@ -14,9 +18,13 @@ namespace OnlyNote
         private string _task;
         private string _notes;
 
+        [DataMember]
         public string ID { get => _Id; set => _Id = value; }
+        [DataMember]
         public string Category { get => _category; set => _category = value; }
+        [DataMember]
         public string Task { get => _task; set => _task = value; }
+        [DataMember]
         public string Notes { get => _notes; set => _notes = value; }
 
         public TODOItem() { }
@@ -29,18 +37,34 @@ namespace OnlyNote
         }
     }
 
+    [CollectionDataContract]
     class TODOItemList : List<TODOItem>
     {
-        public bool Populate()
-        {
-            //            string s1 = @"[TODOItem:{'ID':1,'category':'A','task':'B','notes':'C'},TODOItem:{'ID':2,'category':'D','task':'E','notes':'F'}]";
-            //           JavaScriptSerializer sr = new JavaScriptSerializer();
-            //            TODOItem todo = sr.Deserialize<TODOItem>(s2);
+        private string filename = "TODOList.json";
 
-            CreateDummyTODO();
-            //List<TODOItem> newTasks = new List<TODOItem>();
-            ////TODO: read JSON in newTasks
-            //this.InsertRange(this.IndexOf(this.Last()), newTasks);
+        public TODOItemList()
+        {
+            Populate();
+        }
+
+        private bool Populate()
+        {
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(TODOItemList));
+            FileStream stream = new FileStream("TODOList.json", FileMode.OpenOrCreate);
+            stream.Position = 0;
+            TODOItemList newList = (TODOItemList)ser.ReadObject(stream);
+            this.AddRange(newList);
+
+            //CreateDummyTODO();
+
+            return true;
+        }
+
+        private bool Save()
+        {
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(TODOItemList));
+            FileStream stream = new FileStream("TODOList.json", FileMode.OpenOrCreate);
+            ser.WriteObject(stream, this);
 
             return true;
         }
@@ -76,7 +100,8 @@ namespace OnlyNote
 
         public void AddNewCategory(string category)
         {
-            this.Add(new TODOItem(category, string.Empty, string.Empty));
+            this.Add(new TODOItem(category, "Dummy Task", string.Empty));
+            Save();
         }
     }
 }
