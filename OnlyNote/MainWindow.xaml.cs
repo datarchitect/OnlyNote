@@ -15,6 +15,21 @@ using System.Windows.Shapes;
 
 namespace OnlyNote
 {
+    public class pos
+    {
+        private int _row;
+        private int _col;
+
+        public int col { get => _col; set => _col = value; }
+        public int row { get => _row; set => _row = value; }
+
+        public pos() { }
+        public pos(int row, int col)
+        {
+            this.row = row;
+            this.col = col;
+        }
+    }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -24,7 +39,7 @@ namespace OnlyNote
         private const int MAX_ROWS = 4;
         private const int MAX_COLS = 4;
         ListBox[,] taskLists = new ListBox[MAX_ROWS, MAX_COLS];
-        int currentRow = 0, currentCol = 0;
+        pos currentPosition = new pos ( 0, 0 );
 
         public MainWindow()
         {
@@ -32,7 +47,7 @@ namespace OnlyNote
             list.Populate();
             BindEvents();
             HydrateForm();
-            UpdateTaskLists();
+//            UpdateTaskLists();
         }
 
         public void BindEvents()
@@ -52,67 +67,69 @@ namespace OnlyNote
 
             foreach (string category in categories)
             {
-                ShowCategory(category);
+                pos thisPosition = AddCategoryControls(category);
+                UpdateTaskLists(thisPosition);
             }
-
-            int tabIndexCount = 0;
-            for (int row = 0; row < MAX_ROWS; row++)
-                for (int col = 0; col < MAX_COLS; col++)
-                {
-                    ListBox thisList = taskLists[row, col];
-                    if (thisList != null)
-                    {
-                        thisList.IsTabStop = true;
-                        thisList.TabIndex = tabIndexCount;
-
-                        if (tabIndexCount == 0)
-                            thisList.Focus();
-
-                        tabIndexCount++;
-                    }
-                }
         }
 
-        private ListBox ShowCategory(string category)
+        private pos AddCategoryControls(string category)
         {
-            if ((currentRow == MAX_ROWS) || (currentCol == MAX_COLS))
-                MessageBox.Show("Row / Col limit reached");
+            pos newPosition = GetNextPos(currentPosition);
 
             Label lblNew = new Label();
             lblNew.Name = ("lbl" + category).Replace(" ", "");
             lblNew.Content = category;
             lblNew.IsTabStop = false;
-            Grid.SetColumn(lblNew, currentCol);
-            Grid.SetRow(lblNew, currentRow);
+            Grid.SetColumn(lblNew, newPosition.col);
+            Grid.SetRow(lblNew, newPosition.row);
             grdMain.Children.Add(lblNew);
 
             ListBox newList = new ListBox();
             newList.Name = ("lst" + category).Replace(" ", "");
-            Grid.SetColumn(newList, currentCol);
-            Grid.SetRow(newList, currentRow + 1);
+            Grid.SetColumn(newList, newPosition.col);
+            Grid.SetRow(newList, newPosition.row + 1);
             grdMain.Children.Add(newList);
             newList.Tag = category;
-            //            lstTasks.SelectionChanged += lstTasks_SelectionChanged;
             newList.KeyUp += LstTasks_KeyUp;
 
-            //TODO: move this out
-            taskLists[currentRow, currentCol] = newList;
+            newList.IsTabStop = true;
+            int tabIndex = (newPosition.row * MAX_COLS) + newPosition.col;
+            newList.TabIndex = tabIndex;
 
-            //TODO: move this out
-            list.Add(new TODOItem(category, "Dummy Task", string.Empty));
-            UpdateTaskLists(newList, category);
+            //TODO: move out
+            if (tabIndex == 0)
+                newList.Focus();
 
-            currentCol++;
-            if (currentCol == MAX_COLS)
+            taskLists[newPosition.row, newPosition.col] = newList;
+            currentPosition = newPosition;
+
+            return newPosition;
+        }
+
+        private void AddNewCategory(string newValue)
+        {
+            list.Add(new TODOItem(newValue, "Dummy Task", string.Empty));
+
+            pos thisPosition = AddCategoryControls(newValue);
+            UpdateTaskLists(thisPosition);
+        }
+
+        public pos GetNextPos(pos currentPosition)
+        {
+            if ((currentPosition.row == MAX_ROWS) || (currentPosition.col == MAX_COLS))
+                MessageBox.Show("Row / Col limit reached");
+
+            currentPosition.col++;
+            if (currentPosition.col == MAX_COLS)
             {
-                if (currentRow < MAX_ROWS)
+                if (currentPosition.row < MAX_ROWS)
                 {
-                    currentRow += 2;
-                    currentCol = 0;
+                    currentPosition.row += 2;
+                    currentPosition.col = 0;
                 }
             }
 
-            return newList;
+            return currentPosition;
         }
 
         private void ShowNotes(TODOItem todo)
@@ -126,28 +143,41 @@ namespace OnlyNote
             }
         }
 
-        public void UpdateTaskLists(ListBox thisList, string category)
+        public void UpdateTaskLists(pos thisPosition)
         {
+            ListBox thisList = taskLists[thisPosition.row, thisPosition.col];
+            string category = thisList.Tag as string;
+
             thisList.ItemsSource = list.FilterByCategory(category);
             thisList.DisplayMemberPath = "Task";
             thisList.SelectedValuePath = "ID";
         }
 
-        public void UpdateTaskLists()
+        public void UpdateTaskLists(ListBox thisList)
         {
-            for (int row = 0; row < MAX_ROWS; row++)
-                for (int col = 0; col < MAX_COLS; col++)
-                {
-                    ListBox thisList = taskLists[row, col];
-                    if (thisList != null)
-                    {
-                        string category = thisList.Tag as string;
-                        thisList.ItemsSource = list.FilterByCategory(category);
-                        thisList.DisplayMemberPath = "Task";
-                        thisList.SelectedValuePath = "ID";
-                    }
-                }
+            string category = thisList.Tag as string;
+
+            thisList.ItemsSource = list.FilterByCategory(category);
+            thisList.DisplayMemberPath = "Task";
+            thisList.SelectedValuePath = "ID";
         }
+
+
+        //public void UpdateTaskLists()
+        //{
+        //    for (int row = 0; row < MAX_ROWS; row++)
+        //        for (int col = 0; col < MAX_COLS; col++)
+        //        {
+        //            ListBox thisList = taskLists[row, col];
+        //            if (thisList != null)
+        //            {
+        //                string category = thisList.Tag as string;
+        //                thisList.ItemsSource = list.FilterByCategory(category);
+        //                thisList.DisplayMemberPath = "Task";
+        //                thisList.SelectedValuePath = "ID";
+        //            }
+        //        }
+        //}
 
         //private void lstTasks_SelectionChanged(object sender, SelectionChangedEventArgs e)
         //{
@@ -157,26 +187,28 @@ namespace OnlyNote
         {
             if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && (e.Key == Key.K))
             {
-                AddNew wnd = new AddNew();
-                wnd.txtNewValue.Text = string.Empty;
-                wnd.ShowDialog();
-                string newValue = wnd.txtNewValue.Text;
-                ShowCategory(newValue);
+                string newValue = ReadNewValue();
+                AddNewCategory(newValue);
             }
+        }
+
+        private string ReadNewValue()
+        {
+            AddNew wnd = new AddNew();
+            wnd.txtNewValue.Text = string.Empty;
+            wnd.ShowDialog();
+            return wnd.txtNewValue.Text;
         }
 
         private void LstTasks_KeyUp(object sender, KeyEventArgs e)
         {
-            ListBox thisListBox = e.Source as ListBox;
             if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && (e.Key == Key.N))
             {
-                AddNew wnd = new AddNew();
-                wnd.ShowDialog();
-                string newValue = wnd.txtNewValue.Text;
-
-                list.Add(new TODOItem(thisListBox.Tag as string, newValue, string.Empty));
-
-                UpdateTaskLists();
+                ListBox thisListBox = e.Source as ListBox;
+                string thisCategory = thisListBox.Tag as string;
+                string newValue = ReadNewValue();
+                list.Add(new TODOItem(thisCategory, newValue, string.Empty));
+                UpdateTaskLists(thisListBox);
             }
         }
 
