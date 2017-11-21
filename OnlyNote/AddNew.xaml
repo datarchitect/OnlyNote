@@ -1,0 +1,12 @@
+﻿<Window x:Class="OnlyNote.AddNew"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OnlyNote"
+        mc:Ignorable="d"
+        Title="AddNew" Height="66.5" Width="300" KeyUp="Window_KeyUp" Loaded="Window_Loaded">
+    <Grid>
+        <TextBox x:Name="txtNewValue" HorizontalAlignment="Stretch" TextWrapping="NoWrap" Text="" VerticalAlignment="Stretch" TabIndex="0" />
+    </Grid>
+</Window>
