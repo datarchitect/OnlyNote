@@ -22,7 +22,13 @@
             <ColumnDefinition Width="100*"/>
             <ColumnDefinition Width="100*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock x:Name="txtCommands" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Grid.Row="6" TextWrapping="NoWrap" Text="TextBlock" TextAlignment="Center" VerticalAlignment="Stretch"/>
+        <TextBlock x:Name="txtCommands" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" TextWrapping="NoWrap" Text="TextBlock" TextAlignment="Center" VerticalAlignment="Stretch" FontSize="8"/>
+        <!--<Rectangle x:Name="rctDormant" Grid.Row="2" Grid.Column="0" Fill="Red" Height="10" Width="25" Margin="10,0,0,0" Stroke="Transparent" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBlock x:Name="txtDormant" Grid.Row="2" Grid.Column="0" Margin="40,0,0,0" Text="3" Width="5" TextAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="NoWrap" FontWeight="DemiBold"/>
+        <Rectangle x:Name="rctUntouched" Grid.Row="2" Grid.Column="0" Fill="Gray"  Height="10" Width="25" Margin="60,0,0,0" Stroke="Transparent" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBlock x:Name="txtUntouched" Grid.Row="2" Grid.Column="0" Margin="95,0,0,0" Text="3" Width="5" TextAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Stretch" TextWrapping="NoWrap" FontWeight="DemiBold"/>
+        <Rectangle x:Name="rctOthers" Grid.Row="2" Grid.Column="0" Fill="White" Stroke="ForestGreen"  Height="10" Width="25" Margin="130,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBlock x:Name="txtOthers" Grid.Row="2" Grid.Column="0" Margin="165,0,0,0" Text="3" Width="5" TextAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Stretch" TextWrapping="NoWrap" FontWeight="DemiBold"/>-->
         <!--<Label x:Name="lblCategoryR0C0" Grid.Column="0" Grid.Row="0" Content="Category Name" HorizontalAlignment="Left" VerticalAlignment="Top" />
         <ListBox x:Name="lstTasksR1C0" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionChanged="lstTasks_SelectionChanged" ItemsSource="{Binding Path=TODOItem}"/>
         <Label x:Name="lblCategoryR2C0" Grid.Column="0" Grid.Row="2" Content="Category Name" HorizontalAlignment="Left" VerticalAlignment="Top" />
@@ -39,7 +45,7 @@
         <ListBox x:Name="lstTasksR1C3" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionChanged="lstTasks_SelectionChanged" ItemsSource="{Binding Path=TODOItem}"/>
         <Label x:Name="lblCategoryR2C3" Grid.Column="3" Grid.Row="2" Content="Category Name" HorizontalAlignment="Left" VerticalAlignment="Top" />
         <ListBox x:Name="lstTasksR2C3" Grid.Column="3" Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionChanged="lstTasks_SelectionChanged" ItemsSource="{Binding Path=TODOItem}"/>-->
-        
+
     </Grid>
 
 </Window>

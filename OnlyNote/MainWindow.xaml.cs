@@ -133,6 +133,87 @@ namespace OnlyNote
                 newList.Focus();
 
             taskLists[currentPosition.row, currentPosition.col] = newList;
+
+            //-----------------------
+            //        <Rectangle x:Name="rctDormant" Grid.Row="2" Grid.Column="0" Fill="Red" Height="10" Width="25" Margin="10,0,0,0" Stroke="Transparent" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+            Rectangle rctNewDormant = new Rectangle();
+            rctNewDormant.Name = "rctDormant" + category.Replace(" ", "");
+            Grid.SetRow(rctNewDormant, currentPosition.row + 2);
+            Grid.SetColumn(rctNewDormant, currentPosition.col);
+            rctNewDormant.Fill = new SolidColorBrush(Color.FromRgb(125,0,0)); 
+            rctNewDormant.Height = 10;
+            rctNewDormant.Width = 25;
+            rctNewDormant.Margin = new Thickness(10, 0, 0, 0);
+            rctNewDormant.Stroke = new SolidColorBrush(Color.FromRgb(125, 0, 0));
+            rctNewDormant.VerticalAlignment = VerticalAlignment.Center;
+            rctNewDormant.HorizontalAlignment = HorizontalAlignment.Left;
+            grdMain.Children.Add(rctNewDormant);
+
+            TextBlock txtDormant = new TextBlock();
+            txtDormant.Text = "XX";
+            txtDormant.Name = "txtDormant" + category.Replace(" ", "");
+            txtDormant.Margin = new Thickness(45, 0, 0, 0);
+            txtDormant.Width = 25;
+            txtDormant.TextAlignment = TextAlignment.Center;
+            txtDormant.HorizontalAlignment = HorizontalAlignment.Left;
+            txtDormant.VerticalAlignment = VerticalAlignment.Center;
+            txtDormant.TextWrapping = TextWrapping.NoWrap;
+            Grid.SetRow(txtDormant, currentPosition.row + 2);
+            Grid.SetColumn(txtDormant, currentPosition.col);
+            grdMain.Children.Add(txtDormant);
+
+            Rectangle rctUntouched = new Rectangle();
+            rctUntouched.Name = "rctUntouched" + category.Replace(" ", "");
+            Grid.SetRow(rctUntouched, currentPosition.row + 2);
+            Grid.SetColumn(rctUntouched, currentPosition.col);
+            rctUntouched.Fill = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+            rctUntouched.Height = 10;
+            rctUntouched.Width = 25;
+            rctUntouched.Margin = new Thickness(80, 0, 0, 0);
+            rctUntouched.Stroke = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+            rctUntouched.VerticalAlignment = VerticalAlignment.Center;
+            rctUntouched.HorizontalAlignment = HorizontalAlignment.Left;
+            grdMain.Children.Add(rctUntouched);
+
+            TextBlock txtUntouched = new TextBlock();
+            txtUntouched.Text = "XX";
+            txtUntouched.Name = "txtUntouched" + category.Replace(" ", "");
+            txtUntouched.Margin = new Thickness(115, 0, 0, 0);
+            txtUntouched.Width = 25;
+            txtUntouched.TextAlignment = TextAlignment.Center;
+            txtUntouched.HorizontalAlignment = HorizontalAlignment.Left;
+            txtUntouched.VerticalAlignment = VerticalAlignment.Center;
+            txtUntouched.TextWrapping = TextWrapping.NoWrap;
+            Grid.SetRow(txtUntouched, currentPosition.row + 2);
+            Grid.SetColumn(txtUntouched, currentPosition.col);
+            grdMain.Children.Add(txtUntouched);
+
+            Rectangle rctOthers = new Rectangle();
+            rctOthers.Name = "rctOthers" + category.Replace(" ", "");
+            Grid.SetRow(rctOthers, currentPosition.row + 2);
+            Grid.SetColumn(rctOthers, currentPosition.col);
+            rctOthers.Fill = new SolidColorBrush(Color.FromRgb(1, 1, 1)); ;
+            rctOthers.Height = 10;
+            rctOthers.Width = 25;
+            rctOthers.Margin = new Thickness(150, 0, 0, 0);
+            rctOthers.Stroke = new SolidColorBrush(Color.FromRgb(27, 82, 87)); ;
+            rctOthers.VerticalAlignment = VerticalAlignment.Center;
+            rctOthers.HorizontalAlignment = HorizontalAlignment.Left;
+            grdMain.Children.Add(rctOthers);
+
+            TextBlock txtOthers = new TextBlock();
+            txtOthers.Text = "XX";
+            txtOthers.Name = "txtOthers" + category.Replace(" ", "");
+            txtOthers.Margin = new Thickness(185, 0, 0, 0);
+            txtOthers.Width = 25;
+            txtOthers.TextAlignment = TextAlignment.Center;
+            txtOthers.HorizontalAlignment = HorizontalAlignment.Left;
+            txtOthers.VerticalAlignment = VerticalAlignment.Center;
+            txtOthers.TextWrapping = TextWrapping.NoWrap;
+            Grid.SetRow(txtOthers, currentPosition.row + 2);
+            Grid.SetColumn(txtOthers, currentPosition.col);
+            grdMain.Children.Add(txtOthers);
+            //-----------------------
         }
 
         private void ShowNotes(TODOItem todo)
