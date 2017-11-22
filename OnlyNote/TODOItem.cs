@@ -35,26 +35,34 @@ namespace OnlyNote
             this.Task = task;
             this.Notes = notes;
         }
+
+        internal void Copy(TODOItem dest)
+        {
+            this.Category = dest.Category;
+            this.Task = dest.Task;
+            this.Notes = dest.Notes;
+        }
     }
 
     [CollectionDataContract]
     class TODOItemList : List<TODOItem>
     {
         private string filename = "TODOList.json";
+        private string backupFilename = "TODOList.backup";
 
         public TODOItemList()
         {
-            Populate();
+//            Populate();
         }
 
-        private bool Populate()
+        public bool Populate()
         {
             DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(TODOItemList));
-            FileStream stream = new FileStream("TODOList.json", FileMode.OpenOrCreate);
+            FileStream stream = new FileStream(filename, FileMode.OpenOrCreate);
             stream.Position = 0;
             TODOItemList newList = (TODOItemList)ser.ReadObject(stream);
             this.AddRange(newList);
-
+            stream.Close();
             //CreateDummyTODO();
 
             return true;
@@ -62,10 +70,15 @@ namespace OnlyNote
 
         private bool Save()
         {
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(TODOItemList));
-            FileStream stream = new FileStream("TODOList.json", FileMode.OpenOrCreate);
-            ser.WriteObject(stream, this);
+            File.Delete(backupFilename);
+            File.Move(filename, backupFilename);
+            
+            FileStream stream = new FileStream(filename, FileMode.OpenOrCreate);            
 
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(TODOItemList));
+            ser.WriteObject(stream, this);
+            stream.Flush();
+            stream.Close();
             return true;
         }
 
@@ -101,6 +114,46 @@ namespace OnlyNote
         public void AddNewCategory(string category)
         {
             this.Add(new TODOItem(category, "Dummy Task", string.Empty));
+            Save();
+        }
+
+        public void AddTask(string category, string newTask)
+        {
+            this.Add(new TODOItem(category, newTask, string.Empty));
+            Save();
+        }
+
+        public void AddNotes(string taskID, string Notes)
+        {
+            TODOItem task = this.Where(t => t.ID == taskID).FirstOrDefault();
+            task.Notes = Notes;
+            Save();
+        }
+
+        internal void ImportTasks(string thisCategory, string newValues)
+        {
+            newValues = newValues.Replace('\r', ' ');
+            string[] tasks = newValues.Split(new char[] { '\n' });
+            foreach(string task in tasks)
+            {
+                this.AddTask(thisCategory, task);
+            }
+        }
+
+        internal void DeleteTask(TODOItem selectedTaskItem)
+        {
+            this.Remove(selectedTaskItem);
+            Save();
+        }
+
+        internal void SwapTask(TODOItem source, TODOItem dest)
+        {
+            TODOItem temp = new TODOItem();
+
+            temp.Copy(source);
+            source.Copy(dest);
+            dest.Copy(temp);
+
             Save();
         }
     }

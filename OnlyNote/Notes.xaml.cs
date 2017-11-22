@@ -19,6 +19,7 @@ namespace OnlyNote
     /// </summary>
     public partial class wndNotes : Window
     {
+        string oldValue = string.Empty;
         public wndNotes()
         {
             InitializeComponent();
@@ -27,12 +28,20 @@ namespace OnlyNote
         private void wndAddNew_Loaded(object sender, RoutedEventArgs e)
         {
             txtNotes.Focus();
+            oldValue = txtNotes.Text;
         }
 
         private void wndAddNew_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
+            {
+                txtNotes.Text = oldValue;
                 this.Close();
+            }
+            if(((Keyboard.IsKeyDown(Key.LeftCtrl)) || (Keyboard.IsKeyDown(Key.RightCtrl))) && (e.Key == Key.Enter))
+            {
+                this.Close();
+            }
         }
     }
 }

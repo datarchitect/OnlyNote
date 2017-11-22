@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="Notes" Height="509.368" Width="543.658" Topmost="True" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" Loaded="wndAddNew_Loaded" KeyUp="wndAddNew_KeyUp">
     <Grid>
-        <TextBox x:Name="txtNotes" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="" VerticalAlignment="Stretch"/>
+        <TextBox x:Name="txtNotes" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="" VerticalAlignment="Stretch" AcceptsReturn="True" AcceptsTab="True" SpellCheck.IsEnabled="True"/>
     </Grid>
 </Window>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OnlyNote"
         mc:Ignorable="d"
-        Title="Only Note" Height="600" Width="1024" MinWidth="1024" MinHeight="600" ResizeMode="CanMinimize" WindowState="Maximized" KeyUp="Window_KeyUp">
+        Title="Only Note" Height="600" Width="1024" MinWidth="1024" MinHeight="600" ResizeMode="CanMinimize" KeyUp="Window_KeyUp">
     <Grid x:Name="grdMain">
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>

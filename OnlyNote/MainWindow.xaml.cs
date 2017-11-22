@@ -66,6 +66,7 @@ namespace OnlyNote
         public MainWindow()
         {
             InitializeComponent();
+            list.Populate();
             currentPosition.SetMaxLimit(MAX_ROWS, MAX_COLS);
             BindEvents();
             HydrateForm();
@@ -132,7 +133,8 @@ namespace OnlyNote
                 wndNotes wnd = new wndNotes();
                 wnd.txtNotes.Text = todo.Notes;
                 wnd.ShowDialog();
-                todo.Notes = wnd.txtNotes.Text;
+                list.AddNotes(todo.ID, wnd.txtNotes.Text);
+                //todo.Notes = wnd.txtNotes.Text;
             }
         }
 
@@ -204,7 +206,49 @@ namespace OnlyNote
                 ListBox thisListBox = e.Source as ListBox;
                 string thisCategory = thisListBox.Tag as string;
                 string newValue = ReadNewValue();
-                list.Add(new TODOItem(thisCategory, newValue, string.Empty));
+                list.AddTask(thisCategory, newValue);
+                UpdateTaskListControl(thisListBox);
+            }
+            if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && (e.Key == Key.I))
+            {
+                ListBox thisListBox = e.Source as ListBox;
+                string thisCategory = thisListBox.Tag as string;
+                wndNotes wndMultiText = new wndNotes();
+                wndMultiText.ShowDialog();
+                string newValues = wndMultiText.txtNotes.Text;
+                list.ImportTasks(thisCategory, newValues);
+                UpdateTaskListControl(thisListBox);
+            }
+            if (((Keyboard.IsKeyDown(Key.LeftCtrl)) || (Keyboard.IsKeyDown(Key.RightCtrl))) && (e.Key == Key.D))
+            {
+                ListBox thisListBox = e.Source as ListBox;
+//                ListBoxItem thisListItem = thisListBox.SelectedItem as ListBoxItem;
+                TODOItem selectedTaskItem = thisListBox.SelectedItem as TODOItem;
+                list.DeleteTask(selectedTaskItem);
+                UpdateTaskListControl(thisListBox);
+            }
+            if (((Keyboard.IsKeyDown(Key.LeftCtrl)) || (Keyboard.IsKeyDown(Key.RightCtrl))) && (e.Key == Key.Up))
+            {
+                ListBox thisListBox = e.Source as ListBox;
+                int selectedIndex = thisListBox.SelectedIndex;
+                if (selectedIndex > 0)
+                {
+                    //ListBoxItem thisListItem = thisListBox.SelectedItem as ListBoxItem;
+                    TODOItem selectedTaskItem = thisListBox.SelectedItem as TODOItem;
+
+                    //ListBoxItem destinationListItem = thisListBox.Items[selectedIndex - 1] as ListBoxItem;
+                    TODOItem destinationTaskItem = thisListBox.Items[selectedIndex - 1] as TODOItem;
+
+                    list.SwapTask(selectedTaskItem, destinationTaskItem);
+                    UpdateTaskListControl(thisListBox);
+                }
+            }
+            if (((Keyboard.IsKeyDown(Key.LeftCtrl)) || (Keyboard.IsKeyDown(Key.RightCtrl))) && (e.Key == Key.Down))
+            {
+                ListBox thisListBox = e.Source as ListBox;
+                ListBoxItem thisListItem = thisListBox.SelectedItem as ListBoxItem;
+                TODOItem selectedTaskItem = thisListItem.DataContext as TODOItem;
+                list.DeleteTask(selectedTaskItem);
                 UpdateTaskListControl(thisListBox);
             }
         }
