@@ -21,6 +21,7 @@ namespace OnlyNote
         private int _col;
         private int _maxRow;
         private int _maxCol;
+        private int _rowSpan;
 
         public int col { get => _col; set => _col = value; }
         public int row { get => _row; set => _row = value; }
@@ -38,12 +39,17 @@ namespace OnlyNote
             _maxCol = col;
         }
 
+        public void SetRowSpan(int rowSpan)
+        {
+            this._rowSpan = rowSpan;
+        }
+
         public void MoveToNextPos()
         {
             if (_col >= (_maxCol - 1))
             {
                 _col = 0;
-                _row += 2;
+                _row += _rowSpan;
             }
             else
                 _col++;
@@ -58,8 +64,9 @@ namespace OnlyNote
     public partial class MainWindow : Window
     {
         TODOItemList list = new TODOItemList();
-        private const int MAX_ROWS = 4;
+        private const int MAX_ROWS = 6;
         private const int MAX_COLS = 4;
+        private const int ITEM_ROWSPAN = 3;
         ListBox[,] taskLists = new ListBox[MAX_ROWS, MAX_COLS];
         pos currentPosition = new pos ();
 
@@ -67,10 +74,8 @@ namespace OnlyNote
         {
             InitializeComponent();
             list.Populate();
-            currentPosition.SetMaxLimit(MAX_ROWS, MAX_COLS);
             BindEvents();
             HydrateForm();
-//            UpdateTaskLists();
         }
 
         public void BindEvents()
@@ -88,7 +93,11 @@ namespace OnlyNote
         {
             List<string> categories = list.GetAllCategories();
 
+            currentPosition.SetMaxLimit(MAX_ROWS, MAX_COLS);
+            currentPosition.SetRowSpan(ITEM_ROWSPAN);
             currentPosition.Initialize();
+            txtCommands.Text = "Ctrl+N = New Task. Ctrl+K = New Category. Ctrl+Up = Move task up. Ctrl+Down = Move task down. Ctrl+D = Delete task. Enter = Open Task";
+
             foreach (string category in categories)
             {
                 AddCategoryControls(category);
