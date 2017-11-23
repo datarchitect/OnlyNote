@@ -7,9 +7,54 @@ using System.Web.Script.Serialization;
 using System.Runtime.Serialization;
 using System.IO;
 using System.Runtime.Serialization.Json;
+using System.Windows.Media;
 
 namespace OnlyNote
 {
+
+    struct TaskState
+    {
+        private string _state;
+        private int _duration;
+        private Color _stateColor;
+
+        public string state { get => _state;}
+        public int duration { get => _duration;}
+        public Color stateColor { get => _stateColor; }
+
+        public TaskState(string state, int duration, Color stateColor)
+        {
+            this._state = state;
+            this._duration = duration;
+            this._stateColor = stateColor;
+        }
+    }
+
+    struct TaskSummary
+    {
+        private int _number;
+        private Color _color;
+
+        public int number { get => _number; }
+        public Color color { get => _color; }
+
+        public TaskSummary(int number, Color color)
+        {
+            this._number = number;
+            this._color = color;
+        }
+    }
+
+    class TaskStatus: List<TaskState>
+    {
+        public TaskStatus()
+        {
+            this.Add(new TaskState("Dormant", 14, Color.FromRgb(67,0,0)));
+            this.Add(new TaskState("Untouched", 7, Color.FromRgb(0,20,20)));
+            this.Add(new TaskState("Others", 0, Color.FromRgb(255,255,200)));
+        }
+    }
+
     [DataContract]
     class TODOItem
     {
@@ -17,30 +62,57 @@ namespace OnlyNote
         private string _category;
         private string _task;
         private string _notes;
+        private DateTime _dateCreated;
+        private DateTime _dateModified;
+        private string _createdBy;
+        private string _modifiedBy;
 
         [DataMember]
-        public string ID { get => _Id; set => _Id = value; }
+        public string ID { get => _Id; }
         [DataMember]
-        public string Category { get => _category; set => _category = value; }
+        public string Category { get => _category; }
         [DataMember]
-        public string Task { get => _task; set => _task = value; }
+        public string Task { get => _task; }
         [DataMember]
-        public string Notes { get => _notes; set => _notes = value; }
+        public string Notes { get => _notes; }
+        [DataMember]
+        public DateTime DateCreated { get => _dateCreated; }
+        [DataMember]
+        public DateTime DateModified { get => _dateModified;}
+        [DataMember]
+        public string CreatedBy { get => _createdBy;}
+        [DataMember]
+        public string ModifiedBy { get => _modifiedBy; }
 
         public TODOItem() { }
         public TODOItem(string category, string task, string notes)
         {
-            this.ID = Guid.NewGuid().ToString();
-            this.Category = category;
-            this.Task = task;
-            this.Notes = notes;
+            this._Id = Guid.NewGuid().ToString();
+            this._category = category;
+            this._task = task;
+            this._notes = notes;
+            this._dateCreated = DateTime.Now;
+            this._dateModified = DateTime.Now;
+            this._createdBy = UserProfile.UserName;
+            this._modifiedBy = UserProfile.UserName;
         }
 
         internal void Copy(TODOItem dest)
         {
-            this.Category = dest.Category;
-            this.Task = dest.Task;
-            this.Notes = dest.Notes;
+            this._category = dest.Category;
+            this._task = dest.Task;
+            this._notes = dest.Notes;
+            this._dateModified = DateTime.Now;
+            this._modifiedBy = UserProfile.UserName;
+        }
+
+        internal void UpdateTask(string category, string task, string newNotes)
+        {
+            this._category = category;
+            this._task = task;
+            this._notes = newNotes;
+            this._dateModified = DateTime.Now;
+            this._modifiedBy = UserProfile.UserName;
         }
     }
 
@@ -123,10 +195,10 @@ namespace OnlyNote
             Save();
         }
 
-        public void AddNotes(string taskID, string Notes)
+        public void AddNotes(string taskID, string newNotes)
         {
             TODOItem task = this.Where(t => t.ID == taskID).FirstOrDefault();
-            task.Notes = Notes;
+            task.UpdateTask(task.Category, task.Task, newNotes);
             Save();
         }
 
@@ -155,6 +227,23 @@ namespace OnlyNote
             dest.Copy(temp);
 
             Save();
+        }
+
+        internal List<TaskSummary> GetTaskSummary(string category)
+        {
+            List<TaskSummary> result = new List<TaskSummary>();
+            TaskStatus taskStatus = new TaskStatus();
+
+            double lastLimit = 1000;
+            foreach (TaskState taskState in taskStatus.OrderByDescending(t => t.duration))
+            {
+                int count = this.Where(t => ((DateTime.Now - t.DateModified).TotalDays >= taskState.duration) && ((DateTime.Now - t.DateModified).TotalDays < lastLimit)).Count();
+                result.Add(new TaskSummary(count, taskState.stateColor));
+
+                lastLimit = taskState.duration;
+            }
+
+            return result;
         }
     }
 }

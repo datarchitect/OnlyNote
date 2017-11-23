@@ -101,6 +101,7 @@ namespace OnlyNote
             foreach (string category in categories)
             {
                 AddCategoryControls(category);
+                ShowSummary(category);
                 UpdateTaskListControl(currentPosition);
                 currentPosition.MoveToNextPos();
             }
@@ -135,19 +136,19 @@ namespace OnlyNote
             taskLists[currentPosition.row, currentPosition.col] = newList;
 
             //-----------------------
-            //        <Rectangle x:Name="rctDormant" Grid.Row="2" Grid.Column="0" Fill="Red" Height="10" Width="25" Margin="10,0,0,0" Stroke="Transparent" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-            Rectangle rctNewDormant = new Rectangle();
-            rctNewDormant.Name = "rctDormant" + category.Replace(" ", "");
-            Grid.SetRow(rctNewDormant, currentPosition.row + 2);
-            Grid.SetColumn(rctNewDormant, currentPosition.col);
-            rctNewDormant.Fill = new SolidColorBrush(Color.FromRgb(125,0,0)); 
-            rctNewDormant.Height = 10;
-            rctNewDormant.Width = 25;
-            rctNewDormant.Margin = new Thickness(10, 0, 0, 0);
-            rctNewDormant.Stroke = new SolidColorBrush(Color.FromRgb(125, 0, 0));
-            rctNewDormant.VerticalAlignment = VerticalAlignment.Center;
-            rctNewDormant.HorizontalAlignment = HorizontalAlignment.Left;
-            grdMain.Children.Add(rctNewDormant);
+            Rectangle rctDormant = new Rectangle();
+            rctDormant.Name = "rctDormant" + category.Replace(" ", "");
+            Grid.SetRow(rctDormant, currentPosition.row + 2);
+            Grid.SetColumn(rctDormant, currentPosition.col);
+            rctDormant.Fill = new SolidColorBrush(Color.FromRgb(125,0,0)); 
+            rctDormant.Height = 10;
+            rctDormant.Width = 25;
+            rctDormant.Margin = new Thickness(10, 0, 0, 0);
+            rctDormant.Stroke = new SolidColorBrush(Color.FromRgb(125, 0, 0));
+            rctDormant.VerticalAlignment = VerticalAlignment.Center;
+            rctDormant.HorizontalAlignment = HorizontalAlignment.Left;
+            grdMain.Children.Add(rctDormant);
+            RegisterName(rctDormant.Name, rctDormant);
 
             TextBlock txtDormant = new TextBlock();
             txtDormant.Text = "XX";
@@ -161,6 +162,7 @@ namespace OnlyNote
             Grid.SetRow(txtDormant, currentPosition.row + 2);
             Grid.SetColumn(txtDormant, currentPosition.col);
             grdMain.Children.Add(txtDormant);
+            RegisterName(txtDormant.Name, txtDormant);
 
             Rectangle rctUntouched = new Rectangle();
             rctUntouched.Name = "rctUntouched" + category.Replace(" ", "");
@@ -174,6 +176,7 @@ namespace OnlyNote
             rctUntouched.VerticalAlignment = VerticalAlignment.Center;
             rctUntouched.HorizontalAlignment = HorizontalAlignment.Left;
             grdMain.Children.Add(rctUntouched);
+            RegisterName(rctUntouched.Name, rctUntouched);
 
             TextBlock txtUntouched = new TextBlock();
             txtUntouched.Text = "XX";
@@ -187,6 +190,7 @@ namespace OnlyNote
             Grid.SetRow(txtUntouched, currentPosition.row + 2);
             Grid.SetColumn(txtUntouched, currentPosition.col);
             grdMain.Children.Add(txtUntouched);
+            RegisterName(txtUntouched.Name, txtUntouched);
 
             Rectangle rctOthers = new Rectangle();
             rctOthers.Name = "rctOthers" + category.Replace(" ", "");
@@ -200,6 +204,7 @@ namespace OnlyNote
             rctOthers.VerticalAlignment = VerticalAlignment.Center;
             rctOthers.HorizontalAlignment = HorizontalAlignment.Left;
             grdMain.Children.Add(rctOthers);
+            RegisterName(rctOthers.Name, rctOthers);
 
             TextBlock txtOthers = new TextBlock();
             txtOthers.Text = "XX";
@@ -213,10 +218,11 @@ namespace OnlyNote
             Grid.SetRow(txtOthers, currentPosition.row + 2);
             Grid.SetColumn(txtOthers, currentPosition.col);
             grdMain.Children.Add(txtOthers);
-            //-----------------------
+            RegisterName(txtOthers.Name, txtOthers);
+
         }
 
-        private void ShowNotes(TODOItem todo)
+        private void EditNotes(TODOItem todo)
         {
             if (todo != null)
             {
@@ -224,8 +230,14 @@ namespace OnlyNote
                 wnd.txtNotes.Text = todo.Notes;
                 wnd.ShowDialog();
                 list.AddNotes(todo.ID, wnd.txtNotes.Text);
-                //todo.Notes = wnd.txtNotes.Text;
             }
+        }
+
+        private void ShowDetails(string details)
+        {
+            wndNotes wnd = new wndNotes();
+            wnd.txtNotes.Text = details;
+            wnd.ShowDialog();
         }
 
         public void UpdateTaskListControl(pos thisPosition)
@@ -347,7 +359,7 @@ namespace OnlyNote
         {
             ListBoxItem thisListItem = e.Source as ListBoxItem;
             TODOItem selectedTaskItem = thisListItem.DataContext as TODOItem;
-            ShowNotes(selectedTaskItem);
+            EditNotes(selectedTaskItem);
         }
 
         private void TaskItem_KeyUp(object sender, KeyEventArgs e)
@@ -356,9 +368,35 @@ namespace OnlyNote
             {
                 ListBoxItem thisListItem = e.Source as ListBoxItem;
                 TODOItem selectedTaskItem = thisListItem.DataContext as TODOItem;
-                ShowNotes(selectedTaskItem);
+                EditNotes(selectedTaskItem);
+            }
+            if (((Keyboard.IsKeyDown(Key.LeftCtrl)) || (Keyboard.IsKeyDown(Key.RightCtrl))) && (e.Key == Key.Space))
+            {
+                ListBoxItem thisListItem = e.Source as ListBoxItem;
+                TODOItem selectedTaskItem = thisListItem.DataContext as TODOItem;
+                string details = @" Task name: " + selectedTaskItem.Task + "\r\n" + "Task created: " + selectedTaskItem.DateCreated + "\r\n" + "Task modified: " + selectedTaskItem.DateModified + "\r\n" + "Modified By: " + selectedTaskItem.ModifiedBy;
+                ShowDetails(details);
             }
         }
 
+        private void ShowSummary(string category)
+        {
+            list.GetSummary(category, )
+            string[] prefixes = new string[] { "Dormant", "Untouched", "Others" };
+            string rctName = string.Empty;
+            string txtName = string.Empty;
+
+            foreach (string prefix in prefixes)
+            {
+                rctName = "rct" + prefix + category.Replace(" ", "");
+                Rectangle rct = FindName(rctName) as Rectangle;
+                rct.Fill = new SolidColorBrush(Color.FromRgb(100, 67, 21));
+
+                txtName = "txt" + prefix + category.Replace(" ", "");
+                TextBlock txt = FindName(txtName) as TextBlock;
+                txt.Text = "YY";
+            }
+
+        }
     }
 }
