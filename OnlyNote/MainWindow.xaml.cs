@@ -70,6 +70,12 @@ namespace OnlyNote
         ListBox[,] taskLists = new ListBox[MAX_ROWS, MAX_COLS];
         pos currentPosition = new pos ();
 
+        int summaryRctWidth = 25;
+        int summaryTxtWidth = 25;
+        int summaryGap = 10;
+        int summaryStart = 10;
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -134,93 +140,56 @@ namespace OnlyNote
                 newList.Focus();
 
             taskLists[currentPosition.row, currentPosition.col] = newList;
+        }
 
-            //-----------------------
+        private string AddSummaryRctControl(string category, int summaryCount)
+        {
             Rectangle rctDormant = new Rectangle();
             rctDormant.Name = "rctDormant" + category.Replace(" ", "");
-            Grid.SetRow(rctDormant, currentPosition.row + 2);
-            Grid.SetColumn(rctDormant, currentPosition.col);
-            rctDormant.Fill = new SolidColorBrush(Color.FromRgb(125,0,0)); 
+            rctDormant.Fill = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            rctDormant.Stroke = new SolidColorBrush(Color.FromRgb(125, 0, 0));
             rctDormant.Height = 10;
             rctDormant.Width = 25;
-            rctDormant.Margin = new Thickness(10, 0, 0, 0);
-            rctDormant.Stroke = new SolidColorBrush(Color.FromRgb(125, 0, 0));
             rctDormant.VerticalAlignment = VerticalAlignment.Center;
             rctDormant.HorizontalAlignment = HorizontalAlignment.Left;
+
+            //10, 80, 150
+            int leftMargin = summaryStart = (summaryRctWidth * summaryCount) + (summaryTxtWidth * summaryCount) + (summaryGap * (summaryCount));
+            rctDormant.Margin = new Thickness(10, 0, 0, 0);
+
+            Grid.SetRow(rctDormant, currentPosition.row + 2);
+            Grid.SetColumn(rctDormant, currentPosition.col);
+
             grdMain.Children.Add(rctDormant);
             RegisterName(rctDormant.Name, rctDormant);
 
+            return rctDormant.Name;
+        }
+
+        private string AddSummaryTxtControl(string category, int summaryCount)
+        {
             TextBlock txtDormant = new TextBlock();
-            txtDormant.Text = "XX";
-            txtDormant.Name = "txtDormant" + category.Replace(" ", "");
-            txtDormant.Margin = new Thickness(45, 0, 0, 0);
-            txtDormant.Width = 25;
+            txtDormant.Text = "X" + summaryCount.ToString();
+            txtDormant.Name = "txt" + category.Replace(" ", "") + summaryCount.ToString();
+            txtDormant.Width = summaryTxtWidth;
             txtDormant.TextAlignment = TextAlignment.Center;
             txtDormant.HorizontalAlignment = HorizontalAlignment.Left;
             txtDormant.VerticalAlignment = VerticalAlignment.Center;
             txtDormant.TextWrapping = TextWrapping.NoWrap;
+
+            //45, 115, 185
+            int leftMargin = summaryStart = (summaryRctWidth * summaryCount) + (summaryTxtWidth * (summaryCount + 1)) + (summaryGap * (summaryCount));
+            txtDormant.Margin = new Thickness(leftMargin, 0, 0, 0);
+
             Grid.SetRow(txtDormant, currentPosition.row + 2);
             Grid.SetColumn(txtDormant, currentPosition.col);
+
             grdMain.Children.Add(txtDormant);
             RegisterName(txtDormant.Name, txtDormant);
 
-            Rectangle rctUntouched = new Rectangle();
-            rctUntouched.Name = "rctUntouched" + category.Replace(" ", "");
-            Grid.SetRow(rctUntouched, currentPosition.row + 2);
-            Grid.SetColumn(rctUntouched, currentPosition.col);
-            rctUntouched.Fill = new SolidColorBrush(Color.FromRgb(0, 255, 0));
-            rctUntouched.Height = 10;
-            rctUntouched.Width = 25;
-            rctUntouched.Margin = new Thickness(80, 0, 0, 0);
-            rctUntouched.Stroke = new SolidColorBrush(Color.FromRgb(0, 255, 0));
-            rctUntouched.VerticalAlignment = VerticalAlignment.Center;
-            rctUntouched.HorizontalAlignment = HorizontalAlignment.Left;
-            grdMain.Children.Add(rctUntouched);
-            RegisterName(rctUntouched.Name, rctUntouched);
-
-            TextBlock txtUntouched = new TextBlock();
-            txtUntouched.Text = "XX";
-            txtUntouched.Name = "txtUntouched" + category.Replace(" ", "");
-            txtUntouched.Margin = new Thickness(115, 0, 0, 0);
-            txtUntouched.Width = 25;
-            txtUntouched.TextAlignment = TextAlignment.Center;
-            txtUntouched.HorizontalAlignment = HorizontalAlignment.Left;
-            txtUntouched.VerticalAlignment = VerticalAlignment.Center;
-            txtUntouched.TextWrapping = TextWrapping.NoWrap;
-            Grid.SetRow(txtUntouched, currentPosition.row + 2);
-            Grid.SetColumn(txtUntouched, currentPosition.col);
-            grdMain.Children.Add(txtUntouched);
-            RegisterName(txtUntouched.Name, txtUntouched);
-
-            Rectangle rctOthers = new Rectangle();
-            rctOthers.Name = "rctOthers" + category.Replace(" ", "");
-            Grid.SetRow(rctOthers, currentPosition.row + 2);
-            Grid.SetColumn(rctOthers, currentPosition.col);
-            rctOthers.Fill = new SolidColorBrush(Color.FromRgb(1, 1, 1)); ;
-            rctOthers.Height = 10;
-            rctOthers.Width = 25;
-            rctOthers.Margin = new Thickness(150, 0, 0, 0);
-            rctOthers.Stroke = new SolidColorBrush(Color.FromRgb(27, 82, 87)); ;
-            rctOthers.VerticalAlignment = VerticalAlignment.Center;
-            rctOthers.HorizontalAlignment = HorizontalAlignment.Left;
-            grdMain.Children.Add(rctOthers);
-            RegisterName(rctOthers.Name, rctOthers);
-
-            TextBlock txtOthers = new TextBlock();
-            txtOthers.Text = "XX";
-            txtOthers.Name = "txtOthers" + category.Replace(" ", "");
-            txtOthers.Margin = new Thickness(185, 0, 0, 0);
-            txtOthers.Width = 25;
-            txtOthers.TextAlignment = TextAlignment.Center;
-            txtOthers.HorizontalAlignment = HorizontalAlignment.Left;
-            txtOthers.VerticalAlignment = VerticalAlignment.Center;
-            txtOthers.TextWrapping = TextWrapping.NoWrap;
-            Grid.SetRow(txtOthers, currentPosition.row + 2);
-            Grid.SetColumn(txtOthers, currentPosition.col);
-            grdMain.Children.Add(txtOthers);
-            RegisterName(txtOthers.Name, txtOthers);
-
+            return txtDormant.Name;
         }
+
 
         private void EditNotes(TODOItem todo)
         {
@@ -381,21 +350,33 @@ namespace OnlyNote
 
         private void ShowSummary(string category)
         {
-            list.GetSummary(category, )
-            string[] prefixes = new string[] { "Dormant", "Untouched", "Others" };
-            string rctName = string.Empty;
-            string txtName = string.Empty;
-
-            foreach (string prefix in prefixes)
+            List<TaskSummary> summaryList = list.GetTaskSummary(category);
+            int summaryCount = 0;
+            foreach (TaskSummary summary in summaryList)
             {
-                rctName = "rct" + prefix + category.Replace(" ", "");
+                string rctName = AddSummaryRctControl(category, summaryCount);
                 Rectangle rct = FindName(rctName) as Rectangle;
-                rct.Fill = new SolidColorBrush(Color.FromRgb(100, 67, 21));
+                rct.Fill = new SolidColorBrush(summary.color);
 
-                txtName = "txt" + prefix + category.Replace(" ", "");
+                string txtName = AddSummaryTxtControl(category, summaryCount);
                 TextBlock txt = FindName(txtName) as TextBlock;
-                txt.Text = "YY";
+                txt.Text = summary.number.ToString();
+                summaryCount++;
             }
+            //string[] prefixes = new string[] { "Dormant", "Untouched", "Others" };
+            //string rctName = string.Empty;
+            //string txtName = string.Empty;
+
+            //foreach (string prefix in prefixes)
+            //{
+            //    rctName = "rct" + prefix + category.Replace(" ", "");
+            //    Rectangle rct = FindName(rctName) as Rectangle;
+            //    rct.Fill = new SolidColorBrush(Color.FromRgb(100, 67, 21));
+
+            //    txtName = "txt" + prefix + category.Replace(" ", "");
+            //    TextBlock txt = FindName(txtName) as TextBlock;
+            //    txt.Text = "YY";
+            //}
 
         }
     }

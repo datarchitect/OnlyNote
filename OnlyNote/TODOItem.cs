@@ -65,7 +65,7 @@ namespace OnlyNote
         private DateTime _dateCreated;
         private DateTime _dateModified;
         private string _createdBy;
-        private string _modifiedBy;
+        private string _modifiedBy = "vik";
 
         [DataMember]
         public string ID { get => _Id; }
@@ -85,6 +85,7 @@ namespace OnlyNote
         public string ModifiedBy { get => _modifiedBy; }
 
         public TODOItem() { }
+
         public TODOItem(string category, string task, string notes)
         {
             this._Id = Guid.NewGuid().ToString();
