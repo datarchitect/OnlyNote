@@ -145,7 +145,7 @@ namespace OnlyNote
         private string AddSummaryRctControl(string category, int summaryCount)
         {
             Rectangle rctDormant = new Rectangle();
-            rctDormant.Name = "rctDormant" + category.Replace(" ", "");
+            rctDormant.Name = "rct" + category.Replace(" ", "") + summaryCount.ToString();
             rctDormant.Fill = new SolidColorBrush(Color.FromRgb(255, 255, 255));
             rctDormant.Stroke = new SolidColorBrush(Color.FromRgb(125, 0, 0));
             rctDormant.Height = 10;
@@ -155,7 +155,7 @@ namespace OnlyNote
 
             //10, 80, 150
             int leftMargin = summaryStart = (summaryRctWidth * summaryCount) + (summaryTxtWidth * summaryCount) + (summaryGap * (summaryCount));
-            rctDormant.Margin = new Thickness(10, 0, 0, 0);
+            rctDormant.Margin = new Thickness(leftMargin, 0, 0, 0);
 
             Grid.SetRow(rctDormant, currentPosition.row + 2);
             Grid.SetColumn(rctDormant, currentPosition.col);

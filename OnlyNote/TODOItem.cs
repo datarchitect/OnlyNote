@@ -65,24 +65,24 @@ namespace OnlyNote
         private DateTime _dateCreated;
         private DateTime _dateModified;
         private string _createdBy;
-        private string _modifiedBy = "vik";
+        private string _modifiedBy;
 
         [DataMember]
-        public string ID { get => _Id; }
+        public string ID { get => _Id; set => _Id = value; }
         [DataMember]
-        public string Category { get => _category; }
+        public string Category { get => _category; set => _category = value; }
         [DataMember]
-        public string Task { get => _task; }
+        public string Task { get => _task; set => _task = value; }
         [DataMember]
-        public string Notes { get => _notes; }
+        public string Notes { get => _notes; set => _notes = value; }
         [DataMember]
-        public DateTime DateCreated { get => _dateCreated; }
+        public DateTime DateCreated { get => _dateCreated; set => _dateCreated = value; }
         [DataMember]
-        public DateTime DateModified { get => _dateModified;}
+        public DateTime DateModified { get => _dateModified; set => _dateModified = value; }
         [DataMember]
-        public string CreatedBy { get => _createdBy;}
+        public string CreatedBy { get => _createdBy; set => _createdBy = value; }
         [DataMember]
-        public string ModifiedBy { get => _modifiedBy; }
+        public string ModifiedBy { get => _modifiedBy; set => _modifiedBy = value; }
 
         public TODOItem() { }
 
@@ -238,7 +238,7 @@ namespace OnlyNote
             double lastLimit = 1000;
             foreach (TaskState taskState in taskStatus.OrderByDescending(t => t.duration))
             {
-                int count = this.Where(t => ((DateTime.Now - t.DateModified).TotalDays >= taskState.duration) && ((DateTime.Now - t.DateModified).TotalDays < lastLimit)).Count();
+                int count = this.Where(t => ((t.Category == category) && (DateTime.Now - t.DateModified).TotalDays >= taskState.duration) && ((DateTime.Now - t.DateModified).TotalDays < lastLimit)).Count();
                 result.Add(new TaskSummary(count, taskState.stateColor));
 
                 lastLimit = taskState.duration;
