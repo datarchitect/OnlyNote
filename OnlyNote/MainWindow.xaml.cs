@@ -293,7 +293,7 @@ namespace OnlyNote
             if (((Keyboard.IsKeyDown(Key.LeftCtrl)) || (Keyboard.IsKeyDown(Key.RightCtrl))) && (e.Key == Key.D))
             {
                 ListBox thisListBox = e.Source as ListBox;
-//                ListBoxItem thisListItem = thisListBox.SelectedItem as ListBoxItem;
+                //                ListBoxItem thisListItem = thisListBox.SelectedItem as ListBoxItem;
                 TODOItem selectedTaskItem = thisListBox.SelectedItem as TODOItem;
                 list.DeleteTask(selectedTaskItem);
                 UpdateTaskListControl(thisListBox);
@@ -312,15 +312,25 @@ namespace OnlyNote
 
                     list.SwapTask(selectedTaskItem, destinationTaskItem);
                     UpdateTaskListControl(thisListBox);
+                    thisListBox.SelectedIndex = selectedIndex - 1;
                 }
             }
             if (((Keyboard.IsKeyDown(Key.LeftCtrl)) || (Keyboard.IsKeyDown(Key.RightCtrl))) && (e.Key == Key.Down))
             {
                 ListBox thisListBox = e.Source as ListBox;
-                ListBoxItem thisListItem = thisListBox.SelectedItem as ListBoxItem;
-                TODOItem selectedTaskItem = thisListItem.DataContext as TODOItem;
-                list.DeleteTask(selectedTaskItem);
-                UpdateTaskListControl(thisListBox);
+                int selectedIndex = thisListBox.SelectedIndex;
+                if (selectedIndex < thisListBox.Items.Count - 1)
+                {
+                    //ListBoxItem thisListItem = thisListBox.SelectedItem as ListBoxItem;
+                    TODOItem selectedTaskItem = thisListBox.SelectedItem as TODOItem;
+
+                    //ListBoxItem destinationListItem = thisListBox.Items[selectedIndex - 1] as ListBoxItem;
+                    TODOItem destinationTaskItem = thisListBox.Items[selectedIndex + 1] as TODOItem;
+
+                    list.SwapTask(selectedTaskItem, destinationTaskItem);
+                    UpdateTaskListControl(thisListBox);
+                    thisListBox.SelectedIndex = selectedIndex + 1;
+                }
             }
         }
 
