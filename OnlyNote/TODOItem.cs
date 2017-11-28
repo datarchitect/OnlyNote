@@ -246,5 +246,10 @@ namespace OnlyNote
 
             return result;
         }
+
+        internal void RenameTask(TODOItem task, string newValue)
+        {
+            task.UpdateTask(task.Category, newValue, task.Notes);
+        }
     }
 }

@@ -102,7 +102,7 @@ namespace OnlyNote
             currentPosition.SetMaxLimit(MAX_ROWS, MAX_COLS);
             currentPosition.SetRowSpan(ITEM_ROWSPAN);
             currentPosition.Initialize();
-            txtCommands.Text = "Ctrl+N = New Task. Ctrl+K = New Category. Ctrl+Up = Move task up. Ctrl+Down = Move task down. Ctrl+D = Delete task. Enter = Open Task";
+            txtCommands.Text = "Ctrl+K = New Category. Ctrl+N = New Task. Ctrl+Up = Move task up. Ctrl+Down = Move task down. Ctrl+D = Delete task. F2 = Rename task. Enter = Add notes. Ctrl + I = Import multiline notes.";
 
             foreach (string category in categories)
             {
@@ -331,6 +331,14 @@ namespace OnlyNote
                     UpdateTaskListControl(thisListBox);
                     thisListBox.SelectedIndex = selectedIndex + 1;
                 }
+            }
+            if (e.Key == Key.F2)
+            {
+                ListBox thisListBox = e.Source as ListBox;
+                TODOItem selectedTaskItem = thisListBox.SelectedItem as TODOItem;
+                string newValue = ReadNewValue();
+                list.RenameTask(selectedTaskItem, newValue);
+                UpdateTaskListControl(thisListBox);
             }
         }
 
